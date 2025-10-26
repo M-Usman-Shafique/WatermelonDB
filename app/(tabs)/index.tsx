@@ -1,98 +1,136 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { createProduct, getAllProducts } from '@/watermelon/collections/products';
+import Product from '@/watermelon/models/products';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function HomeScreen(): React.JSX.Element {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [title, setTitle] = useState('');
+  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const products = await getAllProducts();
+      setProducts(products);
+    };
+    fetchProducts();
+  }, []);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const addProduct = async () => {
+    if (!title || !price || !quantity) return;
+    const newProduct = { title, price, quantity };
+    await createProduct(newProduct);
+    setTitle('');
+    setPrice('');
+    setQuantity('');
+    // setProducts([...products, newProduct]);
+  };
+
+  const renderItem = ({ item }: { item: Product }) => (
+    <View style={styles.row}>
+      <Text style={styles.cell}>{item.title}</Text>
+      <Text style={styles.cell}>{item.price}</Text>
+      <Text style={styles.cell}>{item.quantity}</Text>
+    </View>
   );
-}
+
+  return (
+    <View style={styles.container}>
+      {/* Table Header */}
+      <View style={[styles.row, styles.headerRow]}>
+        <Text style={[styles.cell, styles.headerCell]}>Title</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Price</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Quantity</Text>
+      </View>
+
+      {/* Table Body */}
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No products</Text>
+        }
+      />
+
+      {/* Input Row */}
+      <View style={[styles.inputRow]}>
+        <TextInput
+          style={[styles.cell, styles.input]}
+          placeholder="Title"
+          value={title}
+          onChangeText={setTitle}
+        />
+        <TextInput
+          style={[styles.cell, styles.input]}
+          placeholder="Price"
+          value={price}
+          keyboardType="numeric"
+          onChangeText={setPrice}
+        />
+        <TextInput
+          style={[styles.cell, styles.input]}
+          placeholder="Quantity"
+          value={quantity}
+          keyboardType="numeric"
+          onChangeText={setQuantity}
+        />
+      </View>
+
+      {/* Add Button */}
+      <TouchableOpacity style={styles.addButton} onPress={addProduct}>
+        <Text style={styles.addButtonText}>ADD</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    padding: 16,
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  row: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+  },
+  headerRow: {
+    backgroundColor: '#f2f2f2',
+  },
+  cell: {
+    flex: 1,
+    padding: 8,
+    textAlign: 'center',
+  },
+  headerCell: {
+    fontWeight: 'bold',
+  },
+  inputRow: {
+    flexDirection: 'row',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  addButton: {
+    marginTop: 16,
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    borderRadius: 4,
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  addButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  emptyText: {
+    textAlign: 'center',
+    color: '#888',
+    marginVertical: 10,
   },
 });
+
