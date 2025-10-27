@@ -1,39 +1,27 @@
-import { createProduct, getAllProducts } from '@/watermelon/collections/products';
-import Product from '@/watermelon/models/products';
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import EnhancedProductsList from "@/components/ProductsList";
+import { createProduct } from "@/watermelon/collections/products";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 
 export default function HomeScreen(): React.JSX.Element {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const products = await getAllProducts();
-      setProducts(products);
-    };
-    fetchProducts();
-  }, []);
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   const addProduct = async () => {
     if (!title || !price || !quantity) return;
     const newProduct = { title, price, quantity };
     await createProduct(newProduct);
-    setTitle('');
-    setPrice('');
-    setQuantity('');
-    // setProducts([...products, newProduct]);
+    setTitle("");
+    setPrice("");
+    setQuantity("");
   };
-
-  const renderItem = ({ item }: { item: Product }) => (
-    <View style={styles.row}>
-      <Text style={styles.cell}>{item.title}</Text>
-      <Text style={styles.cell}>{item.price}</Text>
-      <Text style={styles.cell}>{item.quantity}</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -41,18 +29,13 @@ export default function HomeScreen(): React.JSX.Element {
       <View style={[styles.row, styles.headerRow]}>
         <Text style={[styles.cell, styles.headerCell]}>Title</Text>
         <Text style={[styles.cell, styles.headerCell]}>Price</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Quantity</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Qty.</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Edit</Text>
+        <Text style={[styles.cell, styles.headerCell]}>Delete</Text>
       </View>
 
       {/* Table Body */}
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No products</Text>
-        }
-      />
+      <EnhancedProductsList />
 
       {/* Input Row */}
       <View style={[styles.inputRow]}>
@@ -65,16 +48,16 @@ export default function HomeScreen(): React.JSX.Element {
         <TextInput
           style={[styles.cell, styles.input]}
           placeholder="Price"
-          value={price}
+          value={price.toString()}
           keyboardType="numeric"
-          onChangeText={setPrice}
+          onChangeText={(text) => setPrice(text)}
         />
         <TextInput
           style={[styles.cell, styles.input]}
           placeholder="Quantity"
-          value={quantity}
+          value={quantity.toString()}
           keyboardType="numeric"
-          onChangeText={setQuantity}
+          onChangeText={(text) => setQuantity(text)}
         />
       </View>
 
@@ -84,53 +67,48 @@ export default function HomeScreen(): React.JSX.Element {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#121212",
     flex: 1,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
-    borderColor: '#ddd',
   },
   headerRow: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#333",
   },
   cell: {
     flex: 1,
     padding: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerCell: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    color: "#fff",
   },
   inputRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#555",
+    color: "#fff",
   },
   addButton: {
     marginTop: 16,
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 12,
     borderRadius: 4,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
   },
-  emptyText: {
-    textAlign: 'center',
-    color: '#888',
-    marginVertical: 10,
-  },
 });
-

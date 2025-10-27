@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol } from '@/components/icon-symbol';
 
 export default function TabLayout() {
 
@@ -10,6 +10,10 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#121212",
+          borderTopWidth: 0,
+        },
       }}>
       <Tabs.Screen
         name="index"
