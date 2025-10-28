@@ -1,8 +1,13 @@
 // comments.ts
 import { Model } from "@nozbe/watermelondb";
-import { field, text, date, immutableRelation } from "@nozbe/watermelondb/decorators";
-import User from "./users";
-import Post from "./posts";
+import {
+  field,
+  text,
+  date,
+  immutableRelation,
+} from "@nozbe/watermelondb/decorators";
+import User from "./users.model";
+import Post from "./posts.model";
 
 export default class Comment extends Model {
   static table = "comments";
@@ -17,6 +22,6 @@ export default class Comment extends Model {
   @date("created_at") createdAt!: Date;
   @date("updated_at") updatedAt!: Date;
 
-  @immutableRelation('users', 'user_id') user!: User;
-  @immutableRelation('posts', 'post_id') post!: Post;
+  @immutableRelation("users", "user_id") user!: User;
+  @immutableRelation("posts", "post_id") post!: Post;
 }

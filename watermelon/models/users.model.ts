@@ -1,8 +1,8 @@
 // users.ts
 import { Model, Query } from "@nozbe/watermelondb";
 import { field, text, date, children } from "@nozbe/watermelondb/decorators";
-import Post from "./posts";
-import Comment from "./comments";
+import Post from "./posts.model";
+import Comment from "./comments.model";
 
 export default class User extends Model {
   static table = "users";
@@ -15,6 +15,7 @@ export default class User extends Model {
   @text("email") email!: string;
   @text("password") password!: string;
   @field("avatar") avatar?: string;
+  @field("is_authenticated") isAuthenticated!: boolean;
   @date("created_at") createdAt!: Date;
   @date("updated_at") updatedAt!: Date;
 

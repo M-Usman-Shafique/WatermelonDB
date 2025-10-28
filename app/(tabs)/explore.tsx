@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function TabTwoScreen() {
+export default function Explore(): React.JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Explore</Text>
@@ -18,6 +18,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: "#fff",
+    color: "#03DAC6",
   },
 });

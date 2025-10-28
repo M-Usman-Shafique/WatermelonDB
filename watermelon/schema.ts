@@ -4,22 +4,13 @@ export default appSchema({
   version: 1,
   tables: [
     tableSchema({
-      name: 'products',
-      columns: [
-        { name: 'title', type: 'string' },
-        { name: 'price', type: 'number' },
-        { name: 'quantity', type: 'number' },
-        { name: 'created_at', type: 'number' },
-        { name: 'updated_at', type: 'number' },
-      ]
-    }),
-    tableSchema({
       name: 'users',
       columns: [
         { name: 'username', type: 'string' },
         { name: 'email', type: 'string' },
         { name: 'password', type: 'string' },
         { name: 'avatar', type: 'string', isOptional: true },
+        { name: 'is_authenticated', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
       ]

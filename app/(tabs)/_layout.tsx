@@ -2,17 +2,18 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { IconSymbol } from '@/components/icon-symbol';
 
-export default function TabLayout() {
+export default function TabLayout(): React.JSX.Element {
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
+        tabBarActiveTintColor: '#03DAC6',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#121212",
           borderTopWidth: 0,
+          height: 0,
         },
       }}>
       <Tabs.Screen

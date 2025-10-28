@@ -1,5 +1,7 @@
-import EnhancedProductsList from "@/components/ProductsList";
-import { createProduct } from "@/watermelon/collections/products";
+import { currentUserAtom } from "@/atoms/auth.atom";
+import EnhancedPostsList from "@/components/PostsList";
+import { createPost } from "@/watermelon/collections/posts.collection";
+import { useAtom } from "jotai";
 import React, { useState } from "react";
 import {
   View,
@@ -10,61 +12,52 @@ import {
 } from "react-native";
 
 export default function HomeScreen(): React.JSX.Element {
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [quantity, setQuantity] = useState("");
+  const [body, setBody] = useState("");
 
-  const addProduct = async () => {
-    if (!title || !price || !quantity) return;
-    const newProduct = { title, price, quantity };
-    await createProduct(newProduct);
+  const addPost = async () => {
+    if (!title || !body) return;
+    const newPost: IPost = {
+      title,
+      body,
+      isStarred: false,
+      userId: currentUser?.id || "",
+    };
+
+    await createPost(newPost);
     setTitle("");
-    setPrice("");
-    setQuantity("");
+    setBody("");
   };
 
   return (
     <View style={styles.container}>
-      {/* Table Header */}
-      <View style={[styles.row, styles.headerRow]}>
-        <Text style={[styles.cell, styles.headerCell]}>Title</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Price</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Qty.</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Edit</Text>
-        <Text style={[styles.cell, styles.headerCell]}>Delete</Text>
-      </View>
-
-      {/* Table Body */}
-      <EnhancedProductsList />
-
-      {/* Input Row */}
-      <View style={[styles.inputRow]}>
+      <View style={styles.form}>
         <TextInput
-          style={[styles.cell, styles.input]}
-          placeholder="Title"
+          placeholder="Enter post's title"
+          placeholderTextColor="#888"
           value={title}
           onChangeText={setTitle}
+          style={styles.input}
         />
+
         <TextInput
-          style={[styles.cell, styles.input]}
-          placeholder="Price"
-          value={price.toString()}
-          keyboardType="numeric"
-          onChangeText={(text) => setPrice(text)}
-        />
-        <TextInput
-          style={[styles.cell, styles.input]}
-          placeholder="Quantity"
-          value={quantity.toString()}
-          keyboardType="numeric"
-          onChangeText={(text) => setQuantity(text)}
+          placeholder="Enter post's description"
+          placeholderTextColor="#888"
+          value={body}
+          onChangeText={setBody}
+          style={[styles.input, { height: 100 }]}
+          multiline
         />
       </View>
 
-      {/* Add Button */}
-      <TouchableOpacity style={styles.addButton} onPress={addProduct}>
-        <Text style={styles.addButtonText}>ADD</Text>
+      <TouchableOpacity style={styles.button} onPress={addPost}>
+        <Text style={styles.buttonText}>Create Post</Text>
       </TouchableOpacity>
+
+      <View style={styles.postsList}>
+        <EnhancedPostsList />
+      </View>
     </View>
   );
 }
@@ -75,40 +68,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
     flex: 1,
   },
-  row: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-  },
-  headerRow: {
-    backgroundColor: "#333",
-  },
-  cell: {
-    flex: 1,
-    padding: 8,
-    textAlign: "center",
-  },
-  headerCell: {
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  inputRow: {
-    flexDirection: "row",
+  form: {
+    width: "100%",
+    gap: 16,
+    marginBottom: 16,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#555",
+    backgroundColor: "#1e1e1e",
     color: "#fff",
+    borderColor: "#333",
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    height: 44,
   },
-  addButton: {
-    marginTop: 16,
-    backgroundColor: "#007AFF",
+  button: {
+    backgroundColor: "#03DAC6",
     paddingVertical: 12,
-    borderRadius: 4,
+    paddingHorizontal: 40,
+    borderRadius: 6,
+    width: "100%",
     alignItems: "center",
   },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
+  buttonText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  postsList: {
+    flex: 1,
+    marginTop: 16,
   },
 });
